@@ -6,8 +6,8 @@ const filter = document.querySelector('#filter');
 const taskInput = document.querySelector('#task');
 
 // ******* Vars
-let tasks = [],
-    id = 0;
+//let tasks = [];
+let id = 0;
 
 
 // *******************************************
@@ -49,9 +49,10 @@ function getTasks() {
     //let tasks; 
     if (!localStorage.getItem('tasks')){
         tasks =[];
+        id = 0;
     } else {
         tasks = JSON.parse(localStorage.getItem('tasks'));
-        id = tasks.length;
+        id = tasks[tasks.length - 1].id;
     }
 
     tasks.forEach(function(task) {
@@ -110,10 +111,11 @@ function addTask(e) {
 
         // Append li to ul
         taskList.appendChild(li);
-        const newTask = {text: taskInput.value, id: id, isDone: false};
-        tasks.push(newTask);// ************************************
         //Elevate id
         id++;
+        const newTask = {text: taskInput.value, id: id, isDone: false};
+        tasks.push(newTask);// ************************************
+        
 
         // Store in Local Storage (LS)
         storeTaskInLocalStorage(newTask);
@@ -208,6 +210,11 @@ function removeTask(e) {
 // Check task
 function checkTask(e) {
     let tasks;
+    if (!localStorage.getItem('tasks')){
+        tasks =[];
+    } else {
+        tasks = JSON.parse(localStorage.getItem('tasks'));
+    }
     if(e.target.parentElement.classList.contains('check-item')) {
         //if(confirm('Are you sure?')) {
 
@@ -217,8 +224,8 @@ function checkTask(e) {
             console.log(tasks);
             console.log(e);
             console.log("hola");
-            tasks[e.taskId].isDone = !tasks[e.taskId].isDone; // Check what you need to change for it to work
-            
+            tasks[e.target.parentElement.attributes.taskId.value].isDone = !tasks[e.target.parentElement.attributes.taskId.value].isDone; // Check what you need to change for it to work
+            localStorage.setItem("tasks", JSON.stringify(tasks));
             //LIST[e.id].isDone = LIST[e.id].isDone ? false : true; // Check what you need to change for it to work
         //e.target.parentElement.parentElement.remove();
         // Remove from Local Storage
@@ -228,7 +235,7 @@ function checkTask(e) {
     
 }
 
-
+/*
 // Remove from Local Storage ********************************** WTFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 function removeTaskFromLocalStorage(taskItem) {
     let tasks; 
@@ -241,12 +248,32 @@ function removeTaskFromLocalStorage(taskItem) {
     tasks.forEach(function(task, index){
         if(taskItem.textContent === task){
             tasks.splice(index, 1)
+        } else {
+            console.log('aquí está el error');
         }
     });
 
     localStorage.setItem('tasks', JSON.stringify(tasks));
 }
+*/
+function removeTaskFromLocalStorage(taskItem) {
+    let tasks; 
+    if (localStorage.getItem('tasks') === null){
+        tasks =[];
+    } else {
+        tasks = JSON.parse(localStorage.getItem('tasks'));
+    }
 
+    tasks.forEach(function(task, index){
+        if(taskItem.textContent === task.text){
+            tasks.splice(index, 1)
+        } else {
+            console.log('aquí está el error');
+        }
+    });
+
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
 
 // Clear tasks
 function clearTasks() {
